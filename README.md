@@ -32,17 +32,6 @@ This project is designed to parse dictionary data from Nupe to English into mach
    pip install -r requirements.txt
    ```
 
-## Usage
-
-1. Place the raw dictionary data in the `data/` directory (or specify the input file path in the script).
-2. Run the processing script:
-   ```bash
-   python process_data.py --input data/raw_dictionary.txt --output output/dictionary.json
-   ```
-   Replace `--output` with `output/dictionary.csv` to export as CSV.
-
-3. The processed data will be saved in the `output/` directory.
-
 ## File Structure
 
 ```
