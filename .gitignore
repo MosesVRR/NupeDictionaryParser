@@ -1,2 +1,48 @@
 # Ignore virtual environment folder
 venv/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.DS_Store
+
+# IDE and editor files
+.vscode/
+.idea/
+*.iml
+
+# Environment variables
+.env
+*.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Test coverage reports
+htmlcov/
+.coverage
+*.cover
+*.py,cover
+
+# MyPy cache
+.mypy_cache/
+
+# Pytest cache
+.pytest_cache/
+
+# Other
+*.sqlite3
