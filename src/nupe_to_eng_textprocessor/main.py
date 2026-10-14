@@ -1,16 +1,10 @@
 
-import base64
 import json
 from pathlib import Path
 
-from dotenv import load_dotenv
-from langchain_ollama import ChatOllama
-from langchain_core.messages import HumanMessage
-
+from ollama import chat
 from nupe_to_eng_textprocessor.models import DictionaryPage
 
-
-load_dotenv()
 
 image_path = Path("output/dictionary_page_1.png")
 json_path = Path("output/dictionary_page_1.json")
@@ -18,60 +12,72 @@ json_path = Path("output/dictionary_page_1.json")
 if not image_path.exists():
     raise FileNotFoundError(f"Image not found: {image_path}")
 
-# Read the rendered dictionary page.
-image_data = base64.b64encode(image_path.read_bytes()).decode("utf-8")
+print("Sending page to Gemma...", flush=True)
 
-# Use a vision-capable model with structured output.
-llm = ChatOllama(
-    model="gemma4:31b-cloud",
-    base_url="https://ollama.com",
-    temperature=0,
-)
-
-structured_llm = llm.with_structured_output(DictionaryPage)
-
-message = HumanMessage(
-    content=[
+response = chat(
+    model="gemma4:e4b",
+    messages=[
         {
-            "type": "text",
-            "text": """
-Extract the dictionary entries from this scanned Nupe-English
-dictionary page.
-
-Rules:
-1. Preserve Nupe headwords exactly, including tone marks,
-   vowel marks, nasalization, and other diacritics.
-2. Follow the page's columns: Nupe, part of speech,
-   category code, English definition, and additional information.
-3. Keep separate parts of speech or meanings as separate senses
-   when they belong to the same headword.
-4. Preserve alternative spellings, etymologies, and
-   cross-references in additional_information.
-5. Do not invent missing or illegible text.
-6. If something is uncertain, flag the entry for review and
-   explain the uncertainty in page_notes or additional_information.
-7. This is PDF page 5, which is printed dictionary page 1.
-   Use 5 for source_page and page_number.
-8. Include all readable entries on the page.
+            "role": "user",
+            "content": 
 """
-        },
-        {
-            "type": "image_url",
-            "image_url": {
-                "url": f"data:image/png;base64,{image_data}"
-            },
-        },
-    ]
+Extract only the FIRST FIVE dictionary entries from this page.
+
+Return one valid JSON object with these fields:
+- page_number: integer
+- entries: array
+- page_notes: array of strings
+
+Each entry:
+- headword: string
+- alternative_spellings: array of strings
+- senses: array of objects
+- additional_information: array of strings
+- source_page: integer
+- source_excerpt: string
+- review_required: boolean
+
+Each sense:
+- part_of_speech: string or null
+- definition_en: string
+- category_code: string or null
+
+Preserve Nupe spelling and tone marks exactly.
+Do not include column headings as entries.
+Do not invent information.
+Set page_number and source_page to 5.
+Use empty arrays when there is no additional information.
+Return valid JSON only, with no Markdown fences.
+""",
+            "images": [str(image_path.resolve())],
+        }
+    ],
+    format="json",
+    options={"temperature": 0},
 )
 
-result = structured_llm.invoke([message])
+raw = response.message.content
+print("Gemma returned a response.", flush=True)
 
-# Save the structured result as readable JSON.
+try:
+    data = json.loads(raw)
+    result = DictionaryPage.model_validate(data)
+except Exception:
+    # Save the raw response so we can inspect any formatting problems.
+    Path("output/raw_response.txt").write_text(raw, encoding="utf-8")
+    raise
+
 json_path.write_text(
-    json.dumps(result.model_dump(), ensure_ascii=False, indent=2),
+    json.dumps(
+        result.model_dump(),
+        ensure_ascii=False,
+        indent=2,
+    ),
     encoding="utf-8",
 )
 
-print(f"Extracted {len(result.entries)} entries.")
-print(f"Saved results to: {json_path}")
-print(json_path.read_text(encoding="utf-8"))
+print(f"Entries extracted: {len(result.entries)}")
+print(f"Saved to: {json_path}")
+
+if not result.entries:
+    print("WARNING: No entries extracted. Inspect the raw response.")
