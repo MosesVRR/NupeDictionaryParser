@@ -1,0 +1,422 @@
+```json
+{
+  "page_number": 5,
+  "entries": [
+    {
+      "headword": "a",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "pron.",
+          "definition_en": "They; them;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [
+        "Following combinations are made which express the emphatic:- atsó, a bè 'ti a nyi, a bè 'ti tací a nyi, atsó bè egwa a nyi."
+      ],
+      "source_page": 5,
+      "source_excerpt": "a pron. They; them;",
+      "review_required": true
+    },
+    {
+      "headword": "a ǎǎ",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "adv.",
+          "definition_en": "No;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [
+        "the reduplicated form is frequently used, especially in expressing disapproval;"
+      ],
+      "source_page": 5,
+      "source_excerpt": "a ǎǎ adv. No;",
+      "review_required": true
+    },
+    {
+      "headword": "á",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "aux.",
+          "definition_en": "Present Perfect Tense marker",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "á aux. Present Perfect Tense marker",
+      "review_required": true
+    },
+    {
+      "headword": "à",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "adv.",
+          "definition_en": "Negative marker",
+          "category_code": null
+        }
+      ],
+      "additional_information": [
+        "always placed at the end of a sentence"
+      ],
+      "source_page": 5,
+      "source_excerpt": "à adv. Negative marker",
+      "review_required": true
+    },
+    {
+      "headword": "'à",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "aux.",
+          "definition_en": "Shall will; should; would;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [
+        "a contraction of gà."
+      ],
+      "source_page": 5,
+      "source_excerpt": "'à aux. Shall will; should; would;",
+      "review_required": true
+    },
+    {
+      "headword": "á",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "excl.",
+          "definition_en": "Exclamation of surprise.",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "á excl. Exclamation of surprise.",
+      "review_required": true
+    },
+    {
+      "headword": "à",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "excl.",
+          "definition_en": "Exclamation expressing the opposite of surprise.",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "à excl. Exclamation expressing the opposite of surprise.",
+      "review_required": true
+    },
+    {
+      "headword": "ǎ",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "excl.",
+          "definition_en": "Exclamation expressing doubt.",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "ǎ excl. Exclamation expressing doubt.",
+      "review_required": true
+    },
+    {
+      "headword": "ába",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "excl.",
+          "definition_en": "Of course; just so;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [
+        "cf. áka."
+      ],
+      "source_page": 5,
+      "source_excerpt": "ába excl. Of course; just so;",
+      "review_required": true
+    },
+    {
+      "headword": "ábàdàǎ",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Eternal; everlasting; forever",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "ábàdàǎ n. Eternal; everlasting; forever",
+      "review_required": true
+    },
+    {
+      "headword": "a bè 'ti a nyi",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "pron.",
+          "definition_en": "They themselves;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [
+        "cf. a."
+      ],
+      "source_page": 5,
+      "source_excerpt": "a bè 'ti a nyi pron. They themselves;",
+      "review_required": true
+    },
+    {
+      "headword": "ábèke... n",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "conj.",
+          "definition_en": "If; suppose, or supposing that;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [
+        "Following combinations are also used:- kábèke...nǎ, wǔ áyike...nǎ, wǔ ábèke...nǎ."
+      ],
+      "source_page": 5,
+      "source_excerpt": "ábèke... n conj. If; suppose, or supposing that;",
+      "review_required": true
+    },
+    {
+      "headword": "abìgì",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "excl.",
+          "definition_en": "Salutation given to a twin;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [
+        "cf. èbǎ."
+      ],
+      "source_page": 5,
+      "source_excerpt": "abìgì excl. Salutation given to a twin;",
+      "review_required": true
+    },
+    {
+      "headword": "a bo'za",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": null,
+          "definition_en": "it is the fault of",
+          "category_code": "?"
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "a bo'za ? it is the fault of",
+      "review_required": true
+    },
+    {
+      "headword": "acigirí",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Iron-shafted flat-bladed spear used by the Hausa",
+          "category_code": "wp"
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "acigirí n. wp Iron-shafted flat-bladed spear used by the Hausa",
+      "review_required": true
+    },
+    {
+      "headword": "ácí",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "conj.",
+          "definition_en": "Thus so; a word of assent;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [
+        "Also used in the following combinations:- ácígà, ácígà, ácígà, má, ácígà tsá tsá má, ácígà tsá tsá má, ácí tsá, ácí tsá má",
+        "cf. átákófi, bindìga.",
+        "also ndǎ 'bi dirigà, or ndǎ adǔn birigì. Biri is the Hausa for monkey."
+      ],
+      "source_page": 5,
+      "source_excerpt": "ácí conj. Thus so; a word of assent;",
+      "review_required": true
+    },
+    {
+      "headword": "àdǎmǎgì",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Trade flint-lock gun;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "àdǎmǎgì n. Trade flint-lock gun;",
+      "review_required": true
+    },
+    {
+      "headword": "adǔn birigì",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Nickname for a kǎnǎ monkey",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "adǔn birigì n. Nickname for a kǎnǎ monkey",
+      "review_required": true
+    },
+    {
+      "headword": "Adidya",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Salutation for the rank Garǎ.",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "Adidya n. Salutation for the rank Garǎ.",
+      "review_required": true
+    },
+    {
+      "headword": "ádíko",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Handkerchief tied at each corner and hung on the shoulder.",
+          "category_code": "dr"
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "ádíko n. dr Handkerchief tied at each corner and hung on the shoulder.",
+      "review_required": true
+    },
+    {
+      "headword": "àdímǔ",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "a.",
+          "definition_en": "Compulsory;",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "àdímǔ a. Compulsory;",
+      "review_required": true
+    },
+    {
+      "headword": "adinkoro",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Swamp grass,",
+          "category_code": "g"
+        }
+      ],
+      "additional_information": [
+        "used for horse feed."
+      ],
+      "source_page": 5,
+      "source_excerpt": "adinkoro n. g Swamp grass,",
+      "review_required": true
+    },
+    {
+      "headword": "àdìni",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Religion",
+          "category_code": "is"
+        },
+        {
+          "part_of_speech": "a.",
+          "definition_en": "religious",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "àdìni n. is Religion a. religious",
+      "review_required": true
+    },
+    {
+      "headword": "àdǔwa",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Prayer.",
+          "category_code": null
+        },
+        {
+          "part_of_speech": "a.",
+          "definition_en": "prayerful",
+          "category_code": null
+        },
+        {
+          "part_of_speech": "v.",
+          "definition_en": "to pray",
+          "category_code": null
+        }
+      ],
+      "additional_information": [],
+      "source_page": 5,
+      "source_excerpt": "àdǔwa n. Prayer. a. prayerful v. to pray",
+      "review_required": true
+    },
+    {
+      "headword": "ádǔwaci",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Desert date",
+          "category_code": "t"
+        }
+      ],
+      "additional_information": [
+        "The fruit is edible and gum is obtained from it. Balanites aegyptiaca. < Hausa"
+      ],
+      "source_page": 5,
+      "source_excerpt": "ádǔwaci n. t Desert date",
+      "review_required": true
+    }
+  ],
+  "page_notes": []
+}
+```
