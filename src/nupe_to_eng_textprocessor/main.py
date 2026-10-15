@@ -1,53 +1,76 @@
 
+import base64
 import json
+import os
 from pathlib import Path
 
-from ollama import chat
+from dotenv import load_dotenv
+from openai import OpenAI
+
 from nupe_to_eng_textprocessor.models import DictionaryPage
 
 
 # --------------------------------------------------
-# File paths
+# Configuration
 # --------------------------------------------------
+
+load_dotenv()
 
 image_path = Path("output/dictionary_page_1.png")
 json_path = Path("output/dictionary_page_1.json")
 raw_path = Path("output/dictionary_page_1_raw.txt")
 
+MODEL = "gpt-6-astra"
+MAX_OUTPUT_TOKENS = 6000
+
 
 # --------------------------------------------------
-# Check that the input image exists
+# Check configuration and input
 # --------------------------------------------------
+
+if not os.getenv("OPENAI_API_KEY"):
+    raise RuntimeError(
+        "OPENAI_API_KEY is missing. Add it to your .env file."
+    )
 
 if not image_path.exists():
     raise FileNotFoundError(
         f"Image not found: {image_path.resolve()}"
     )
 
-# Ensure the output directory exists.
 json_path.parent.mkdir(parents=True, exist_ok=True)
 
-print("Sending page to Gemma...", flush=True)
+client = OpenAI()
 
 
 # --------------------------------------------------
-# Extract dictionary entries using Gemma
+# Encode the page image
 # --------------------------------------------------
 
-response = chat(
-    model="gemma4:31b-cloud",
-    messages=[
-        {
-            "role": "user",
-            "content": """
-Extract the dictionary entries from this scanned page.
+image_bytes = image_path.read_bytes()
+encoded_image = base64.b64encode(image_bytes).decode("utf-8")
 
-Return one valid JSON object with these fields:
+if image_path.suffix.lower() == ".png":
+    mime_type = "image/png"
+elif image_path.suffix.lower() in {".jpg", ".jpeg"}:
+    mime_type = "image/jpeg"
+else:
+    raise ValueError("Input image must be PNG or JPEG.")
+
+
+# --------------------------------------------------
+# Extract dictionary entries
+# --------------------------------------------------
+
+prompt = """
+Transcribe the Nupe-English dictionary page in the attached image.
+
+Return one JSON object with:
 - page_number: integer
 - entries: array
 - page_notes: array of strings
 
-Each entry must contain:
+Each entry must have:
 - headword: string
 - alternative_spellings: array of strings
 - senses: array of objects
@@ -56,75 +79,94 @@ Each entry must contain:
 - source_excerpt: string
 - review_required: boolean
 
-Each sense must contain:
+Each sense must have:
 - part_of_speech: string or null
 - definition_en: string
 - category_code: string or null
 
-EXTRACTION RULES:
-
-1. Extract the dictionary entries visible on the page.
-2. Do not include column headings or page headers as entries.
-3. Do not invent missing information.
-4. Preserve the original order of the entries.
-5. Preserve the English definitions and any available grammatical
-   labels, category codes, and additional information.
-6. Keep separate senses together under their corresponding
-   headword.
-7. Preserve alternative spellings and cross-references when
-   they are explicitly printed.
-8. Use empty arrays when no additional information is present.
-9. Set page_number and source_page to 5, because this is PDF
-   page 5. The printed dictionary page number is 1.
-10. Set review_required to true for every entry.
-
-DIACRITIC PRESERVATION — CRITICAL:
-
-- Copy every Nupe headword as accurately as possible from the scan.
-- Distinguish acute accents: á, é, í, ó, ú.
-- Distinguish grave accents: à, è, ì, ò, ù.
-- Preserve carons: ǎ, ě, ǐ, ǒ, ǔ.
-- Do not substitute a caron with an acute accent, grave accent,
-  circumflex, tilde, or plain letter.
-- Preserve doubled vowels, nasalization marks, apostrophes,
-  and all other printed symbols.
-- Do not assume similar-looking words have identical spellings.
-- If a character or diacritic is unclear, do not silently guess.
-  Set review_required to true and describe the uncertainty in
+Rules:
+- This is PDF page 5, printed dictionary page 1.
+- Set page_number and source_page to 5.
+- Preserve the original entry order.
+- Do not include column headings as entries.
+- Preserve all distinct senses and explicitly printed notes.
+- Do not invent missing information.
+- Preserve punctuation, apostrophes, repeated vowels,
+  and the original spelling as closely as possible.
+- Distinguish acute accents (á), grave accents (à),
+  and carons (ǎ).
+- Do not silently replace an uncertain character with a guess.
+- Set review_required to true for every entry.
+- If a character is unclear, explain the uncertainty in
   additional_information.
-- Successful transcription does not mean an entry is verified.
+- Return valid JSON only, without Markdown fences.
 
-SOURCE EXCERPT:
+Accuracy is more important than filling in uncertain details.
+"""
 
-For each entry, include a short source_excerpt copied from
-the visible scan to help locate and verify the entry later.
 
-OUTPUT:
+print(f"Sending page to {MODEL}...", flush=True)
 
-Return valid JSON only, without Markdown fences or commentary.
-""",
-            "images": [str(image_path.resolve())],
+response = client.responses.create(
+    model=MODEL,
+    instructions=(
+        "You are transcribing a historical dictionary. "
+        "Do not claim uncertain text is verified."
+    ),
+    input=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "input_text", "text": prompt},
+                {
+                    "type": "input_image",
+                    "image_url": (
+                        f"data:{mime_type};base64,{encoded_image}"
+                    ),
+                    "detail": "high",
+                },
+            ],
         }
     ],
-    format="json",
-    options={"temperature": 0},
+    max_output_tokens=MAX_OUTPUT_TOKENS,
 )
 
 
 # --------------------------------------------------
-# Save the raw response before parsing
+# Save raw response immediately
 # --------------------------------------------------
 
-raw = response.message.content
-
+raw = response.output_text or ""
 raw_path.write_text(raw, encoding="utf-8")
 
-print(f"Gemma returned a response.", flush=True)
+print("Response received.", flush=True)
+print(f"Response status: {response.status}", flush=True)
 print(f"Raw response saved to: {raw_path}", flush=True)
+
+if response.usage:
+    print(
+        f"Input tokens: {response.usage.input_tokens}",
+        flush=True,
+    )
+    print(
+        f"Output tokens: {response.usage.output_tokens}",
+        flush=True,
+    )
+
+if response.status != "completed":
+    raise RuntimeError(
+        f"Response did not complete: {response.status}. "
+        f"Inspect {raw_path}."
+    )
+
+if not raw.strip():
+    raise RuntimeError(
+        f"Model returned no text. Inspect {raw_path}."
+    )
 
 
 # --------------------------------------------------
-# Parse and validate the response
+# Parse and validate JSON
 # --------------------------------------------------
 
 try:
@@ -133,8 +175,8 @@ try:
 
 except (json.JSONDecodeError, ValueError) as exc:
     raise ValueError(
-        f"Could not parse or validate Gemma's response. "
-        f"Inspect: {raw_path}"
+        f"Could not parse or validate the response. "
+        f"Inspect {raw_path}."
     ) from exc
 
 
@@ -144,9 +186,8 @@ except (json.JSONDecodeError, ValueError) as exc:
 
 if not result.entries:
     raise ValueError(
-        "Gemma extracted zero entries. "
-        "The output JSON was not written. "
-        f"Inspect the raw response at: {raw_path}"
+        "No dictionary entries were extracted. "
+        f"Inspect {raw_path}."
     )
 
 
@@ -159,7 +200,7 @@ for entry in result.entries:
 
 
 # --------------------------------------------------
-# Write the structured JSON output
+# Save structured output
 # --------------------------------------------------
 
 json_path.write_text(
@@ -179,7 +220,6 @@ json_path.write_text(
 print()
 print("Extraction completed.")
 print(f"Entries extracted: {len(result.entries)}")
-print(f"PDF page number: {result.page_number}")
 print(f"JSON saved to: {json_path}")
 print(f"Raw response saved to: {raw_path}")
-print("All entries are flagged for manual review.")
+print("All entries require manual verification.")
