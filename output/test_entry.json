@@ -1,0 +1,28 @@
+{
+  "pdf_page_number": 5,
+  "printed_page_number": 1,
+  "entries": [
+    {
+      "headword": "ádúwaci",
+      "alternative_spellings": [],
+      "senses": [
+        {
+          "part_of_speech": "n.",
+          "definition_en": "Desert date",
+          "category_code": "t"
+        }
+      ],
+      "additional_information": [
+        "The fruit is edible and gum is obtained from it.",
+        "Balanites aegyptiaca.",
+        "Hausa"
+      ],
+      "source_pdf_page": 5,
+      "source_printed_page": 1,
+      "source_excerpt": "ádúwaci | n. | t | Desert date",
+      "review_required": true,
+      "human_verified": false
+    }
+  ],
+  "page_notes": []
+}

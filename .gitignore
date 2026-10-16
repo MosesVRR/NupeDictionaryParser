@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dictionary
+/data/Nupe Dictionary_1-8.pdf
+/data/Nupe Dictionary.pdf

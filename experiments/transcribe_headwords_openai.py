@@ -10,8 +10,8 @@ from openai import OpenAI
 # Load the API key from your project's .env file.
 load_dotenv()
 
-image_path = Path("output/headwords_test_p2.png")
-raw_path = Path("output/headwords_test_p2_openai.txt")
+image_path = Path("output/headwords_test_p3.png")
+raw_path = Path("output/headwords_test_p3_openai.txt")
 
 if not os.getenv("OPENAI_API_KEY"):
     raise RuntimeError(
