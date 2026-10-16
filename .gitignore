@@ -219,6 +219,10 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Dictionary
+# Dictionary & Outputs
 /data/Nupe Dictionary_1-8.pdf
+/data/Nupe Dictionary_5-208.pdf
 /data/Nupe Dictionary.pdf
+
+/output/*
+!/output/samples
