@@ -4,13 +4,14 @@ Read-only audit of page-level Nupe dictionary JSON files.
 
 Checks:
 - Expected page files are present
-- JSON parses and validates against DictionaryPage (when the project model imports)
-- Page metadata matches the filename where it can be determined
+- JSON parses and validates against DictionaryPage when importable
+- Page metadata matches the filename where determinable
 - Entry counts and review-flag counts
-- Empty pages and duplicate headwords within a page
+- Empty pages
+- Potential duplicate entries based on headword + part of speech + definition
 - Creates a CSV report and prints a concise summary
 
-Run from the project root, for example:
+Example:
     python audit_dictionary_pages.py --folder output/validated --expected-pages 204
 
 This script does not modify source JSON files.
@@ -23,11 +24,19 @@ import csv
 import json
 import re
 import sys
-from collections import Counter
+import unicodedata
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
 PAGE_RE = re.compile(r"page[_-]?(\d+)", re.IGNORECASE)
+
+
+def normalize_text(value: Any) -> str:
+    """Normalize case and whitespace while preserving diacritics."""
+    if not isinstance(value, str):
+        return ""
+    return " ".join(unicodedata.normalize("NFC", value).casefold().split())
 
 
 def load_dictionary_page_model():
@@ -59,6 +68,28 @@ def get_page_number(data: dict[str, Any], path: Path) -> int | None:
     return int(match.group(1)) if match else None
 
 
+def entry_pos_values(entry: dict[str, Any]) -> list[str]:
+    senses = entry.get("senses", [])
+    if not isinstance(senses, list):
+        return [""]
+    values = []
+    for sense in senses:
+        if isinstance(sense, dict):
+            values.append(normalize_text(sense.get("part_of_speech")))
+    return sorted(set(values)) or [""]
+
+
+def entry_definition_signature(entry: dict[str, Any]) -> str:
+    """Build a conservative signature from all sense definitions."""
+    senses = entry.get("senses", [])
+    definitions = []
+    if isinstance(senses, list):
+        for sense in senses:
+            if isinstance(sense, dict):
+                definitions.append(normalize_text(sense.get("definition_en")))
+    return " | ".join(definitions)
+
+
 def validate_with_model(model, data):
     if model is None:
         return True, "Pydantic model not available; JSON-only validation"
@@ -71,18 +102,17 @@ def validate_with_model(model, data):
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit extracted dictionary page JSON files.")
-    parser.add_argument("--folder", type=Path, default=Path("output/pages"))
+    parser.add_argument("--folder", type=Path, default=Path("output/validated"))
     parser.add_argument("--pattern", default="*validated*.json",
                         help="Glob for validated page JSON files (default: *validated*.json)")
-    parser.add_argument("--expected-pages", type=int, default=204,
-                        help="Expected printed pages (default: 204)")
+    parser.add_argument("--expected-pages", type=int, default=204)
     parser.add_argument("--start-page", type=int, default=1)
     parser.add_argument("--report", type=Path, default=Path("output/audit_report.csv"))
     args = parser.parse_args()
 
     if not args.folder.is_dir():
         print(f"ERROR: folder does not exist: {args.folder.resolve()}", file=sys.stderr)
-        print("Use --folder to point to the directory containing the validated JSON files.")
+        print("Use --folder to point to the directory containing validated page JSON files.")
         return 2
 
     model, model_warning = load_dictionary_page_model()
@@ -93,11 +123,10 @@ def main() -> int:
     files = sorted(p for p in args.folder.glob(args.pattern) if p.is_file())
     if not files:
         print(f"No files matched {args.pattern!r} in {args.folder.resolve()}")
-        print("Check the folder and filename pattern.")
         return 2
 
     rows = []
-    found_page_to_files: dict[int, list[str]] = {}
+    found_page_to_files: dict[int, list[str]] = defaultdict(list)
     errors = Counter()
     total_entries = 0
 
@@ -111,7 +140,7 @@ def main() -> int:
             "schema_valid": False,
             "metadata_matches_filename": "",
             "empty_page": "",
-            "duplicate_headwords": "",
+            "potential_duplicate_groups": "",
             "review_required_true": "",
             "human_verified_true": "",
             "issues": "",
@@ -127,7 +156,7 @@ def main() -> int:
             page_num = get_page_number(data, path)
             row["page_number"] = page_num if page_num is not None else ""
             if page_num is not None:
-                found_page_to_files.setdefault(page_num, []).append(path.name)
+                found_page_to_files[page_num].append(path.name)
 
             entries = data.get("entries", [])
             if not isinstance(entries, list):
@@ -154,15 +183,31 @@ def main() -> int:
                 if filename_page != page_num:
                     issues.append(f"filename page {filename_page} != metadata page {page_num}")
 
-            headwords = [
-                e.get("headword", "").strip().casefold()
-                for e in entries if isinstance(e, dict) and isinstance(e.get("headword"), str)
-            ]
-            counts = Counter(headwords)
-            duplicates = sorted(word for word, count in counts.items() if word and count > 1)
-            row["duplicate_headwords"] = "; ".join(duplicates)
-            if duplicates:
-                issues.append("duplicate headwords on same page (review; may be legitimate)")
+            # Group by normalized headword + POS + definition. This avoids treating
+            # different parts of speech as duplicates, and keeps different meanings
+            # separate. Even exact-signature repeats are only warnings.
+            signatures: dict[tuple[str, tuple[str, ...], str], list[int]] = defaultdict(list)
+            for index, entry in enumerate(entries, start=1):
+                if not isinstance(entry, dict):
+                    continue
+                headword = normalize_text(entry.get("headword"))
+                if not headword:
+                    continue
+                pos = tuple(entry_pos_values(entry))
+                definition = entry_definition_signature(entry)
+                signatures[(headword, pos, definition)].append(index)
+
+            duplicate_groups = []
+            for (headword, pos, definition), indexes in signatures.items():
+                if len(indexes) > 1:
+                    pos_label = ", ".join(p or "(unspecified)" for p in pos)
+                    definition_label = definition or "(no definition)"
+                    duplicate_groups.append(
+                        f"{headword!r} [POS: {pos_label}; definition: {definition_label}; entries: {indexes}]"
+                    )
+            row["potential_duplicate_groups"] = " || ".join(duplicate_groups)
+            if duplicate_groups:
+                issues.append("identical headword/POS/definition signatures repeated (review only)")
 
             row["review_required_true"] = sum(
                 1 for e in entries if isinstance(e, dict) and e.get("review_required") is True
@@ -191,8 +236,8 @@ def main() -> int:
     args.report.parent.mkdir(parents=True, exist_ok=True)
     columns = [
         "file", "page_number", "entry_count", "page_notes_count", "json_valid",
-        "schema_valid", "metadata_matches_filename", "empty_page", "duplicate_headwords",
-        "review_required_true", "human_verified_true", "issues"
+        "schema_valid", "metadata_matches_filename", "empty_page",
+        "potential_duplicate_groups", "review_required_true", "human_verified_true", "issues"
     ]
     with args.report.open("w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=columns)
@@ -212,16 +257,16 @@ def main() -> int:
     print("Files with issues:", errors["files_with_issues"])
     print("Invalid JSON files:", errors["invalid_json"])
     print("CSV report:", args.report.resolve())
+    print("\nDuplicate policy: only repeated normalized headword + POS + definition signatures are flagged.")
+    print("These are warnings for review, not instructions to delete entries.")
+    print("This audit does not establish transcription accuracy.")
 
     if errors["files_with_issues"]:
         print("\nFiles to inspect:")
         for row in rows:
             if row["issues"]:
                 print(f"- {row['file']} [page {row['page_number']}]: {row['issues']}")
-
-    print("\nNote: duplicate headwords are warnings, not automatic errors; separate entries can legitimately share a headword.")
-    print("This audit does not establish transcription accuracy. It checks structure and consistency only.")
-    return 0
+    return 1 if errors["invalid_json"] else 0
 
 
 if __name__ == "__main__":
