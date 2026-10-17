@@ -13,15 +13,15 @@ from nupe_to_eng_textprocessor.models import DictionaryEntry, DictionaryPage
 load_dotenv()
 
 # Input image: full-page crop containing headings and entries.
-IMAGE_PATH = Path("output/pages/dictionary_page_1_450dpi.png")
+IMAGE_PATH = Path("output/pages/page_140_450dpi.png")
 
 # Output files.
-RAW_OUTPUT_PATH = Path("output/full_page_1_raw.json")
-VALIDATED_OUTPUT_PATH = Path("output/full_page_1_validated.json")
+RAW_OUTPUT_PATH = Path("output/page_140__raw.json")
+VALIDATED_OUTPUT_PATH = Path("output/page_140_validated.json")
 
 # Update these to match the source image.
-PDF_PAGE_NUMBER = 206
-PRINTED_PAGE_NUMBER = 202
+PDF_PAGE_NUMBER = 144
+PRINTED_PAGE_NUMBER = 140
 
 MODEL = "gpt-6-astra"
 

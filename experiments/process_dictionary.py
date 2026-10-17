@@ -29,7 +29,7 @@ ORIGINAL_PDF_PAGE_OFFSET = 4
 # Optional: set to integers to process only a range of reduced-PDF pages.
 # These are 1-based page numbers in the REDUCED PDF.
 START_PAGE = 1
-END_PAGE = 1  # None means through the final page.
+END_PAGE = None  # None means through the final page.
 
 
 PROMPT = """
