@@ -226,3 +226,4 @@ __marimo__/
 
 /output/*
 !/output/samples
+!nupe_dictionary.sqlite3
