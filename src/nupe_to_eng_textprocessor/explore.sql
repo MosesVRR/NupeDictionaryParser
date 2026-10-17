@@ -12,18 +12,18 @@
 -- PRAGMA table_info(senses);
 
 
--- SELECT
---     e.headword,
---     s.sense_order,
---     s.part_of_speech,
---     s.definition_en,
---     s.category_code,
---     e.source_printed_page
--- FROM entries AS e
--- JOIN senses AS s
---     ON e.entry_id = s.entry_id
--- WHERE e.headword = 'áyíbì'
--- ORDER BY s.sense_order;
+SELECT
+    e.headword,
+    s.sense_order,
+    s.part_of_speech,
+    s.definition_en,
+    s.category_code,
+    e.source_printed_page
+FROM entries AS e
+JOIN senses AS s
+    ON e.entry_id = s.entry_id
+WHERE e.headword = 'yigídí ètsã bísã'
+ORDER BY s.sense_order;
 
 
 
@@ -45,5 +45,5 @@
 -- ORDER BY headword
 -- LIMIT 50;
 
-PRAGMA table_info(additional_information);
+-- PRAGMA table_info(additional_information);
 
